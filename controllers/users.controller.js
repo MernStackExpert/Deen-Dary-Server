@@ -37,13 +37,38 @@ const getAllUser = async (req, res) => {
   }
 };
 
+const singleUser = async (req, res) => {
+  try {
+    const userCollection = await connectDB();
+    const id = req.params.id;
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).send({ message: "Invalid User Id" });
+    }
+    const result = await userCollection.findOne({ _id: new ObjectId(id) });
+    if (!result) {
+      return res.status(404).send({ message: "User Not Found" });
+    }
+
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({
+      message: "Failed to fetch User",
+      error,
+    });
+  }
+};
+
 const createUser = async (req, res) => {
   try {
     const userCollection = await connectDB();
+
     const user = {
       ...req.body,
+
       role: "user",
+
       createdAt: new Date(),
+
       updatedAt: new Date(),
     };
 
@@ -54,6 +79,7 @@ const createUser = async (req, res) => {
     }
 
     const result = await userCollection.insertOne(user);
+
     res.status(201).send(result);
   } catch (error) {
     res.status(500).send({ message: "Failed to create product", error });
@@ -86,10 +112,10 @@ const deleteUser = async (req, res) => {
 
     const id = req.params.id;
 
-    const result = await userCollection.deleteOne({_id: new ObjectId(id)});
+    const result = await userCollection.deleteOne({ _id: new ObjectId(id) });
 
-    if(result.deletedCount === 0) {
-        return res.status(404).send({ message: "User Not Found" });
+    if (result.deletedCount === 0) {
+      return res.status(404).send({ message: "User Not Found" });
     }
 
     res.send({ message: "User deleted successfully", result });
@@ -98,5 +124,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-
-module.exports = { createUser, getAllUser, updateUser , deleteUser };
+module.exports = { createUser, getAllUser, updateUser, deleteUser, singleUser };
