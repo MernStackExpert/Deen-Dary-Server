@@ -12,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 const usersRoute = require("./routes/users.route")
+const quizRoute = require("./routes/quiz.route")
 
 
 connectDB().then(() => {
@@ -22,6 +23,7 @@ connectDB().then(() => {
 })
 
 app.use('/users' , usersRoute)
+app.use('/quiz' , quizRoute)
 
 app.get('/', (req, res) => {
   res.status(200).send('Alhamdulillah! Ramadan Project Backend is Running Successfully.');
